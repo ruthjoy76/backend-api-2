@@ -1,7 +1,5 @@
 import Person from "../models/Person.js";
 
-
-
 async function getPersons(_req, res) {
   const persons = await Person.find({});
 
@@ -9,20 +7,51 @@ async function getPersons(_req, res) {
 }
 
 async function getPerson(req, res) {
-  res.send('Persons resource');
+  const { id } = req.params.id;
+  const person = await Person.findById(id);
+
+  return res.json(person);
 }
 
 async function createPerson(req, res) {
-  res.send('Persons resource');
+  const { name, number } = req.body; 
+
+  const person = new Person({
+    name,
+    number,
+  });
+
+  const savedPerson = await person.save();
+
+  return res.status(201).json(savedPerson);
 }
 
+
 async function updatePerson(req, res) {
-  res.send('Persons resource');
+  const id = req.params.id;
+  const { name, number } = req.body;
+
+  const person = {
+    name,
+    number,
+  };
+
+  const updatePerson = await Person.findByIdAndUpdate(id, person, {
+    new: true,
+  });
+
+  res.json(updatePerson);
 }
 
 async function deletePerson(req, res) {
-  res.send('Persons resource');
+  const { id } = req.params.id;
+
+  await Person.findByIdAndDelete(id);
+
+  res.status(204).end();
+
 }
+
 
 
 export default {
