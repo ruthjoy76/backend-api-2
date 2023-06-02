@@ -6,11 +6,20 @@ async function getPersons(_req, res) {
   return res.json(persons);
 }
 
-async function getPerson(req, res) {
-  const { id } = req.params.id;
-  const person = await Person.findById(id);
+function getPerson(req, res) {
+ Person.findById(req.params.id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
 
-  return res.json(person);
+    .catch((err) => {
+      console.log(error);
+      return res.status(500).end();
+    });
 }
 
 async function createPerson(req, res) {
