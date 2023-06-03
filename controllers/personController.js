@@ -15,15 +15,30 @@ async function getPerson(req, res) {
 }
 
 // Create Person
-async function createPerson(req, res) {
-  const { name, number } = req.body;
-  const person = new Person({
-    name,
-    number,
-  });
+async function createPerson(req, res, next) {
+  try {
+    const { name, number } = req.body;
+    const personExists = await Person.findOne({ name });
 
-  const savedPerson = await person.save();
-  return res.status(201).json(savedPerson);
+    if (personExists)
+      return res.status(400).json({ error: "Person already exists" });
+
+    if (name === "" || number === "")
+      return res.status(400).json({ error: "Name or number are required" });
+
+    if (typeof name !== "string" || typeof number !== "string")
+      return res.status(400).json({ error: "Name and number must be strings" });
+
+    const person = new Person({
+      name,
+      number,
+    });
+
+    const savedPerson = await person.save();
+    return res.status(201).json(savedPerson);
+  } catch (error) {
+    next(error);
+  }
 }
 
 // Update Person

@@ -9,10 +9,10 @@ import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 const app = express();
 
 const connectToDB = async (url) => {
-    await mongoose.connect(url);
-    console.log("Connected to DB");
+  await mongoose.connect(url);
+  console.log("Connected to DB");
 
-}
+};
 
 connectToDB(config.MONGODB_URI);
 

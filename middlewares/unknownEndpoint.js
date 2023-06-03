@@ -1,6 +1,3 @@
-export default function unknownEndpoint() {
-    return {
-        status: 404,
-        message: "Unknown endpoint"
-    }
+export default function unknownEndpoint(_req, res) {
+  res.status(404).send(unknownEndpoint(_req));
 }
