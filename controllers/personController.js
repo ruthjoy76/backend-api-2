@@ -6,36 +6,27 @@ async function getPersons(_req, res) {
   return res.json(persons);
 }
 
-function getPerson(req, res) {
- Person.findById(req.params.id)
-    .then((person) => {
-      if (person) {
-        res.json(person);
-      } else {
-        res.status(404).end();
-      }
-    })
+// Get Person
+async function getPerson(req, res) {
+  const id = req.params.id;
+  const person = await Person.findById(id);
 
-    .catch((err) => {
-      console.log(error);
-      return res.status(500).end();
-    });
+  return res.json(person);
 }
 
+// Create Person
 async function createPerson(req, res) {
-  const { name, number } = req.body; 
-
+  const { name, number } = req.body;
   const person = new Person({
     name,
     number,
   });
 
   const savedPerson = await person.save();
-
   return res.status(201).json(savedPerson);
 }
 
-
+// Update Person
 async function updatePerson(req, res) {
   const id = req.params.id;
   const { name, number } = req.body;
@@ -45,22 +36,19 @@ async function updatePerson(req, res) {
     number,
   };
 
-  const updatePerson = await Person.findByIdAndUpdate(id, person, {
+  const updatedPerson = await Person.findByIdAndUpdate(id, person, {
     new: true,
   });
 
-  res.json(updatePerson);
+  res.json(updatedPerson);
 }
 
+//Delete Person
 async function deletePerson(req, res) {
-  const { id } = req.params.id;
-
+  const id = req.params.id;
   await Person.findByIdAndDelete(id);
-
   res.status(204).end();
-
 }
-
 
 
 export default {
@@ -69,4 +57,4 @@ export default {
   createPerson,
   updatePerson,
   deletePerson,
-}
+};
