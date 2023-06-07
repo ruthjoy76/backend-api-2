@@ -1,8 +1,8 @@
 import Person from "../models/Person.js";
 import isString from "../utils/isString.js";
 import User from "../models/User.js";
-
-
+import getTokenFrom from "../utils/getTokenFrom.js";
+import jwt from "jsonwebtoken";
 
 async function getPersons(_, res) {
   const persons = await Person.find({});
@@ -23,25 +23,16 @@ async function getPerson(req, res, next) {
   }
 }
 
-async function createPerson(req, res, next) {
+async function createPerson(req, res) {
   try {
-    const { name, number, userId } = req.body;
+    const { name, number } = req.body;
+    const decodedToken = jwt(getTokenFrom(req). config.SECRET);
 
-    const user = await User.findOne({ userId });
+    if (!decodedToken) {
+      return res.status(401).json({ error: "Token missing or invalid" });
+    }
 
-    if (name === undefined || number === undefined)
-      return res.status(400).json({ error: "Content is missing" });
-
-    const personExists = await Person.findOne({ name });
-
-    if (personExists)
-      return res.status(400).json({ error: "Person already exists" });
-
-    if (name === "" || number === "")
-      return res.status(400).json({ error: "Name and number are required" });
-
-    if (!isString(name) || !isString(number))
-      return res.status(400).json({ error: "Name and number must be strings" });
+    const user = await User.findById(decodedToken.id );
 
     const person = new Person({
       name,
@@ -53,8 +44,8 @@ async function createPerson(req, res, next) {
     user.persons = user.persons.concat(savedPerson._id);
 
     return res.status(201).json(savedPerson);
+  // eslint-disable-next-line no-empty
   } catch (error) {
-    next(error);
   }
 }
 
